@@ -1,41 +1,35 @@
 import { GithubOutlined } from '@ant-design/icons';
 import { DefaultFooter } from '@ant-design/pro-components';
-import { useIntl } from 'umi';
-
 const Footer: React.FC = () => {
-  const intl = useIntl();
-  const defaultMessage = intl.formatMessage({
-    id: 'app.copyright.produced',
-    defaultMessage: '蚂蚁集团体验技术部出品',
-  });
-
+  const defaultMessage = 'DYH出品';
   const currentYear = new Date().getFullYear();
-
   return (
     <DefaultFooter
       copyright={`${currentYear} ${defaultMessage}`}
       links={[
         {
-          key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
-          href: 'https://pro.ant.design',
+          key: 'User Center',
+          title: '用户中心',
+          href: 'http://localhost:8000/',
+          // 是否跳转到新页面打开
           blankTarget: true,
         },
         {
-          key: 'github',
+          key: 'Github',
           title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          href: 'https://github.com/DYH1319',
+          // 是否跳转到新页面打开
           blankTarget: true,
         },
         {
-          key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
+          key: 'MCSManager',
+          title: 'MCSManager',
+          href: 'http://43.139.17.93:23333/',
+          // 是否跳转到新页面打开
           blankTarget: true,
         },
       ]}
     />
   );
 };
-
 export default Footer;
