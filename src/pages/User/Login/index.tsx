@@ -15,11 +15,12 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import {Alert, message, Tabs} from 'antd';
+import {Alert, Divider, message, Tabs} from 'antd';
 import React, {useState} from 'react';
-import {history, useModel} from 'umi';
+import {history, Link} from 'umi';
 import styles from './index.less';
-import {SYSTEM_LOGO} from "@/constants";
+import {STEAM_STORE, SYSTEM_LOGO} from "@/constants";
+import {useModel} from "@@/plugin-model/useModel";
 
 const LoginMessage: React.FC<{
   content: string;
@@ -80,7 +81,7 @@ const Login: React.FC = () => {
         <LoginForm
           logo={<img alt="logo" src={SYSTEM_LOGO}/>}
           title="Steam用户中心"
-          subTitle={<a href={"https://store.steampowered.com/"} target={"_blank"} rel="noreferrer">Steam用户中心是国区最具影响力的 <strong>Steam用户</strong> 管理规范</a>}
+          subTitle={<a href={STEAM_STORE} target={"_blank"} rel="noreferrer">Steam用户中心是国区最具影响力的 <strong>Steam用户</strong> 平台</a>}
           initialValues={{
             // 是否默认勾选上自动登录
             autoLogin: true,
@@ -116,6 +117,16 @@ const Login: React.FC = () => {
                     required: true,
                     message: '账号是必填项！',
                   },
+                  {
+                    min: 4,
+                    type: 'string',
+                    message: '账号必须不少于4位！'
+                  },
+                  {
+                    max: 8,
+                    type: 'string',
+                    message: '账号必须不大于8位！'
+                  }
                 ]}
               />
               <ProFormText.Password
@@ -209,15 +220,22 @@ const Login: React.FC = () => {
             <ProFormCheckbox noStyle name="autoLogin">
               自动登录
             </ProFormCheckbox>
+            <Divider type={"vertical"}/>
             <a
+              href={STEAM_STORE}
+              target={"_blank"} rel="noreferrer"
+            >
+              忘记密码?那就忘了吧
+            </a>
+            <Divider type={"vertical"}/>
+            <Link
               style={{
                 float: 'right',
               }}
-              href={"https://store.steampowered.com/"}
-              target={"_blank"} rel="noreferrer"
+              to={"/user/register"}
             >
-              忘记密码 ? 那就忘了吧
-            </a>
+              注册新用户
+            </Link>
           </div>
         </LoginForm>
       </div>
