@@ -7,8 +7,6 @@ import type {RunTimeLayoutConfig} from 'umi';
 import {history, Link} from 'umi';
 import defaultSettings from '../config/defaultSettings';
 import {currentUser as queryCurrentUser} from './services/ant-design-pro/api';
-import type {RequestConfig} from "@@/plugin-request/request";
-
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -21,10 +19,9 @@ export const initialStateConfig = {
   loading: <PageLoading />,
 };
 
-export const request: RequestConfig = {
-  // prefix: 'http://localhost:8080',
-  timeout: 120000
-}
+export const request = {
+  timeout: 120000,
+};
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
@@ -47,12 +44,15 @@ export async function getInitialState(): Promise<{
   if (!whiteList.includes(history.location.pathname)) {
     const currentUser = await fetchUserInfo();
     return {
+      // @ts-ignore
       fetchUserInfo,
+      // @ts-ignore
       currentUser,
       settings: defaultSettings,
     };
   }
   return {
+    // @ts-ignore
     fetchUserInfo,
     settings: defaultSettings,
   };

@@ -70,6 +70,13 @@ declare namespace API {
     type?: string;
   };
 
+  type BaseResponse<T> = {
+    code: number
+    data: T
+    message: string
+    description: string
+  }
+
   type ErrorResponse = {
     /** 业务约定的错误码 */
     errorCode: string;

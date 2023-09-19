@@ -50,13 +50,13 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const user = await login({
+      const data = await login({
         ...values,
         type,
       });
-      if (user) {
-        const defaultLoginSuccessMessage = '登录成功！';
-        message.success(defaultLoginSuccessMessage);
+      if (data) {
+        // const defaultLoginSuccessMessage = '登录成功！';
+        // message.success(defaultLoginSuccessMessage);
         await fetchUserInfo();
         /** 此方法会跳转到 redirect 参数所在的位置 */
         if (!history) return;
@@ -65,13 +65,12 @@ const Login: React.FC = () => {
           redirect: string;
         };
         history.push(redirect || '/');
+        // @ts-ignore
+        setUserLoginState(data);
         return;
       }
-      // console.log(msg); // 如果失败去设置用户错误信息
-      setUserLoginState(user);
     } catch (error) {
-      const defaultLoginFailureMessage = '登录失败，请重试！';
-      message.error(defaultLoginFailureMessage);
+      message.error('登录失败，请重试！');
     }
   };
   const {status, type: loginType} = userLoginState;
