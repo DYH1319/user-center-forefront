@@ -1,9 +1,10 @@
 import {PlusOutlined} from '@ant-design/icons';
 import type {ActionType, ProColumns} from '@ant-design/pro-components';
-import {ProTable, TableDropdown} from '@ant-design/pro-components';
-import {Button, Image} from 'antd';
+import {ProTable} from "@ant-design/pro-components";
+import {Button, Image, message, Modal} from 'antd';
 import {useRef} from 'react';
-import {searchUsers} from "@/services/ant-design-pro/api";
+import {deleteUser, searchUsers, updateUser} from "@/services/ant-design-pro/api";
+import {isEqual} from "lodash";
 
 export const waitTimePromise = async (time: number = 100) => {
   return new Promise((resolve) => {
@@ -22,6 +23,7 @@ const columns: ProColumns<API.CurrentUser>[] = [
     dataIndex: 'id',
     valueType: 'indexBorder',
     width: 48,
+    editable: false
   },
   {
     title: '用户名',
@@ -36,6 +38,7 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '头像',
     dataIndex: 'avatarUrl',
+    hideInSearch: true,
     // ellipsis: true,
     // copyable: true,
     render: (_, entity) => (
@@ -47,6 +50,18 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '性别',
     dataIndex: 'gender',
+    valueType: 'select',
+    valueEnum: {
+      0: {
+        text: '女'
+      },
+      1: {
+        text: '男'
+      },
+      2: {
+        text: '未指定'
+      }
+    },
   },
   {
     title: '电话',
@@ -91,48 +106,25 @@ const columns: ProColumns<API.CurrentUser>[] = [
   {
     title: '创建时间',
     dataIndex: 'createTime',
-    valueType: "dateTime",
+    valueType: 'dateTime',
+    sorter: true,
+    hideInSearch: true,
+    editable: false
   },
-  // {
-  //   disable: true,
-  //   title: '标签',
-  //   dataIndex: 'labels',
-  //   search: false,
-  //   renderFormItem: (_, { defaultRender }) => {
-  //     return defaultRender(_);
-  //   },
-  //   render: (_, record) => (
-  //     <Space>
-  //       {record.labels.map(({ name, color }) => (
-  //         <Tag color={color} key={name}>
-  //           {name}
-  //         </Tag>
-  //       ))}
-  //     </Space>
-  //   ),
-  // },
-  // {
-  //   title: '创建时间',
-  //   key: 'showTime',
-  //   dataIndex: 'created_at',
-  //   valueType: 'date',
-  //   sorter: true,
-  //   hideInSearch: true,
-  // },
-  // {
-  //   title: '创建时间',
-  //   dataIndex: 'created_at',
-  //   valueType: 'dateRange',
-  //   hideInTable: true,
-  //   search: {
-  //     transform: (value) => {
-  //       return {
-  //         startTime: value[0],
-  //         endTime: value[1],
-  //       };
-  //     },
-  //   },
-  // },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    valueType: "dateTimeRange",
+    hideInTable: true,
+    search: {
+      transform: (value) => {
+        return {
+          startTime: value[0],
+          endTime: value[1],
+        };
+      },
+    },
+  },
   {
     title: '操作',
     valueType: 'option',
@@ -141,7 +133,7 @@ const columns: ProColumns<API.CurrentUser>[] = [
       <a
         key="editable"
         onClick={() => {
-          action?.startEditable?.(record.id);
+          action?.startEditable(record.id.toString());
         }}
       >
         编辑
@@ -149,14 +141,35 @@ const columns: ProColumns<API.CurrentUser>[] = [
       <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
         查看
       </a>,
-      <TableDropdown
-        key="actionGroup"
-        onSelect={() => action?.reload()}
-        menus={[
-          { key: 'copy', name: '复制' },
-          { key: 'delete', name: '删除' },
-        ]}
-      />,
+      <a
+        key={"delete"}
+        style={{color: 'red'}}
+        onClick={() => {
+          Modal.confirm({
+            title: '删除用户',
+            content: '确定删除该用户吗？',
+            okText: '确认',
+            cancelText: '取消',
+            onOk: async () => {
+              try {
+                const result = await deleteUser(record.id);
+                // @ts-ignore
+                if (result && result === true) {
+                  action?.reload()
+                  return Promise.resolve()
+                } else {
+                  throw new Error();
+                }
+              } catch (error) {
+                message.error('删除失败，请重试！');
+                return Promise.reject()
+              }
+            },
+          });
+        }}
+      >
+        删除
+      </a>
     ],
   },
 ];
@@ -169,9 +182,10 @@ export default () => {
       actionRef={actionRef}
       cardBordered
       request={async (params = {}, sort, filter) => {
+        // console.log(params)
         console.log(sort, filter);
         await waitTime(2000);
-        const userList = await searchUsers();
+        const userList = await searchUsers(params);
         return {
           data: userList
         }
@@ -182,7 +196,23 @@ export default () => {
         // });
       }}
       editable={{
-        type: 'multiple',
+        type: 'single',
+        onSave: async (id, record, originRow) => {
+          if (isEqual(record, originRow)) return
+          try {
+            const result = await updateUser(record);
+            // @ts-ignore
+            if (result && result === true) {
+              actionRef.current?.reload()
+              return Promise.resolve()
+            } else {
+              throw new Error();
+            }
+          } catch (error) {
+            message.error('保存失败，请重试！');
+            return Promise.reject()
+          }
+        },
       }}
       columnsState={{
         persistenceKey: 'pro-table-singe-demos',
@@ -206,7 +236,7 @@ export default () => {
           if (type === 'get') {
             return {
               ...values,
-              created_at: [values.startTime, values.endTime],
+              createTime: [values.startTime, values.endTime],
             };
           }
           return values;
@@ -217,13 +247,13 @@ export default () => {
         onChange: (page) => console.log(page),
       }}
       dateFormatter="string"
-      headerTitle="高级表格"
+      headerTitle="用户管理"
       toolBarRender={() => [
         <Button
           key="button"
-          icon={<PlusOutlined />}
+          icon={<PlusOutlined/>}
           onClick={() => {
-            actionRef.current?.reload();
+
           }}
           type="primary"
         >

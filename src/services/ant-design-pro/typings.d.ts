@@ -70,6 +70,21 @@ declare namespace API {
     type?: string;
   };
 
+  type SearchParams = {
+    username?: string
+    userAccount?: string
+    avatarUrl?: string
+    gender?: number
+    phone?: string
+    email?: string
+    userStatus?: number
+    userRole?: number
+    startTime?: Date
+    endTime?: Date
+    current: number
+    pageSize: number
+  };
+
   type BaseResponse<T> = {
     code: number
     data: T

@@ -21,6 +21,7 @@ import {history, Link} from 'umi';
 import styles from './index.less';
 import {STEAM_STORE, SYSTEM_LOGO} from "@/constants";
 import {useModel} from "@@/plugin-model/useModel";
+import {RuleObject, StoreValue} from "rc-field-form/lib/interface";
 
 const LoginMessage: React.FC<{
   content: string;
@@ -125,6 +126,11 @@ const Login: React.FC = () => {
                     max: 8,
                     type: 'string',
                     message: '账号必须不大于8位！'
+                  },
+                  {
+                    pattern: new RegExp('^[A-Za-z0-9_-]+$'),
+                    type: 'string',
+                    message: '账户只能包含大小写字母、阿拉伯数字、下划线以及短横线！'
                   }
                 ]}
               />
@@ -149,7 +155,29 @@ const Login: React.FC = () => {
                     max: 16,
                     type: 'string',
                     message: '密码必须不大于16位！'
-                  }
+                  },
+                  {
+                    pattern: new RegExp('^[A-Za-z0-9!@#$%^&*<>?_-]+$'),
+                    type: 'string',
+                    message: '密码只能包含大小写字母、阿拉伯数字以及下列符号:\n!@#$%^&*<>?_-'
+                  },
+                  ({}) => ({
+                    validator(rule: RuleObject, value: StoreValue) {
+                      if (value === undefined) {
+                        return Promise.resolve()
+                      }
+                      let count = 0
+                      count = new RegExp('[A-Z]').test(value) ? count + 1 : count
+                      count = new RegExp('[a-z]').test(value) ? count + 1 : count
+                      count = new RegExp('[0-9]').test(value) ? count + 1 : count
+                      count = new RegExp('[!@#$%^&*<>?_-]').test(value) ? count + 1 : count
+                      if (count < 2) {
+                        return Promise.reject('密码需包含大写字母、小写字母、阿拉伯数字、特殊符号中的至少两项！')
+                      }
+                      return Promise.resolve()
+                    },
+                    message: '密码需包含大写字母、小写字母、阿拉伯数字、特殊符号中的至少两项！'
+                  }),
                 ]}
               />
             </>

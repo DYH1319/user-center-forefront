@@ -4,12 +4,15 @@ import {LockOutlined, UserOutlined,} from '@ant-design/icons';
 import {LoginForm, ProFormText,} from '@ant-design/pro-components';
 import {message, Tabs} from 'antd';
 import React, {useState} from 'react';
-import {history} from 'umi';
+import {history, Link} from 'umi';
 import styles from './index.less';
 import {STEAM_STORE, SYSTEM_LOGO} from "@/constants";
+import {RuleObject, StoreValue} from "rc-field-form/lib/interface";
 
 const Register: React.FC = () => {
+  // let checkSymbol: number = 0; // 限制只能单向校验两次密码输入是否相同，避免死循环
   const [type, setType] = useState<string>('account');
+  // const [form] = ProForm.useForm();
 
   const handleSubmit = async (values: API.RegisterParams) => {
     const {userPassword, checkPassword} = values;
@@ -52,7 +55,8 @@ const Register: React.FC = () => {
           }}
           logo={<img alt="logo" src={SYSTEM_LOGO}/>}
           title="Steam用户中心"
-          subTitle={<a href={STEAM_STORE} target={"_blank"} rel="noreferrer">Steam用户中心是国区最具影响力的 <strong>Steam用户</strong> 平台</a>}
+          subTitle={<a href={STEAM_STORE} target={"_blank"}
+                       rel="noreferrer">Steam用户中心是国区最具影响力的 <strong>Steam用户</strong> 平台</a>}
           initialValues={{
             autoLogin: true,
           }}
@@ -86,6 +90,11 @@ const Register: React.FC = () => {
                     max: 8,
                     type: 'string',
                     message: '账号必须不大于8位！'
+                  },
+                  {
+                    pattern: new RegExp('^[A-Za-z0-9_-]+$'),
+                    type: 'string',
+                    message: '账户只能包含大小写字母、阿拉伯数字、下划线以及短横线！'
                   }
                 ]}
               />
@@ -110,7 +119,44 @@ const Register: React.FC = () => {
                     max: 16,
                     type: 'string',
                     message: '密码必须不大于16位！'
-                  }
+                  },
+                  {
+                    pattern: new RegExp('^[A-Za-z0-9!@#$%^&*<>?_-]+$'),
+                    type: 'string',
+                    message: '密码只能包含大小写字母、阿拉伯数字以及下列符号:\n!@#$%^&*<>?_-'
+                  },
+                  // ({getFieldValue, validateFields}) => ({
+                  //   validator(rule: RuleObject, value: StoreValue) {
+                  //     if (checkSymbol === 0) {
+                  //       checkSymbol++
+                  //       validateFields(['checkPassword'])
+                  //     } else {
+                  //       checkSymbol--
+                  //     }
+                  //     if (value !== getFieldValue('checkPassword')) {
+                  //       return Promise.reject('两次输入的密码不一致！')
+                  //     }
+                  //     return Promise.resolve()
+                  //   },
+                  //   message: '两次输入的密码不一致！'
+                  // }),
+                  ({}) => ({
+                    validator(rule: RuleObject, value: StoreValue) {
+                      if (value === undefined) {
+                        return Promise.resolve()
+                      }
+                      let count = 0
+                      count = new RegExp('[A-Z]').test(value) ? count + 1 : count
+                      count = new RegExp('[a-z]').test(value) ? count + 1 : count
+                      count = new RegExp('[0-9]').test(value) ? count + 1 : count
+                      count = new RegExp('[!@#$%^&*<>?_-]').test(value) ? count + 1 : count
+                      if (count < 2) {
+                        return Promise.reject('密码需包含大写字母、小写字母、阿拉伯数字、特殊符号中的至少两项！')
+                      }
+                      return Promise.resolve()
+                    },
+                    message: '密码需包含大写字母、小写字母、阿拉伯数字、特殊符号中的至少两项！'
+                  }),
                 ]}
               />
               <ProFormText.Password
@@ -134,11 +180,57 @@ const Register: React.FC = () => {
                     max: 16,
                     type: 'string',
                     message: '确认密码必须不大于16位！'
-                  }
+                  },
+                  {
+                    pattern: new RegExp('^[A-Za-z0-9!@#$%^&*<>?_-]+$'),
+                    type: 'string',
+                    message: '密码只能包含大小写字母、阿拉伯数字以及下列符号:\n!@#$%^&*<>?_-'
+                  },
+                  // ({getFieldValue, validateFields}) => ({
+                  //   validator(rule: RuleObject, value: StoreValue) {
+                  //     if (checkSymbol === 0) {
+                  //       checkSymbol++
+                  //       validateFields(['userPassword'])
+                  //     } else {
+                  //       checkSymbol--
+                  //     }
+                  //     if (value !== getFieldValue('userPassword')) {
+                  //       return Promise.reject('两次输入的密码不一致！')
+                  //     }
+                  //     return Promise.resolve()
+                  //   },
+                  //   message: '两次输入的密码不一致！',
+                  // }),
+                  ({}) => ({
+                    validator(rule: RuleObject, value: StoreValue) {
+                      if (value === undefined) {
+                        return Promise.resolve()
+                      }
+                      let count = 0
+                      count = new RegExp('[A-Z]').test(value) ? count + 1 : count
+                      count = new RegExp('[a-z]').test(value) ? count + 1 : count
+                      count = new RegExp('[0-9]').test(value) ? count + 1 : count
+                      count = new RegExp('[!@#$%^&*<>?_-]').test(value) ? count + 1 : count
+                      if (count < 2) {
+                        return Promise.reject('密码需包含大写字母、小写字母、阿拉伯数字、特殊符号中的至少两项！')
+                      }
+                      return Promise.resolve()
+                    },
+                    message: '密码需包含大写字母、小写字母、阿拉伯数字、特殊符号中的至少两项！'
+                  }),
                 ]}
               />
             </>
           )}
+          <Link
+            style={{
+              float: 'right',
+              marginBottom: 24
+            }}
+            to={"/user/login"}
+          >
+            已有账号？立即登录
+          </Link>
         </LoginForm>
       </div>
       <Footer/>

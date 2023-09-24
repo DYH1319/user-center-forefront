@@ -41,13 +41,37 @@ export async function register(body: API.RegisterParams, options?: { [key: strin
 }
 
 /** 搜索用户 GET /api/user/search */
-export async function searchUsers(options?: { [key: string]: any }) {
+export async function searchUsers(param: API.SearchParams, options?: { [key: string]: any }) {
   return request<API.BaseResponse<API.CurrentUser[]>>('/api/user/search', {
     method: 'GET',
+    params: param,
     ...(options || {}),
   });
 }
 
+/** 表格中保存编辑内容 POST /api/user/update */
+export async function updateUser(body: API.CurrentUser, options?: { [key: string]: any }) {
+  return request<API.BaseResponse<boolean>>('/api/user/update', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 表格中删除用户 POST /api/user/delete */
+export async function deleteUser(body: bigint, options?: { [key: string]: any }) {
+  return request<API.BaseResponse<boolean>>('/api/user/delete', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
 
 
 /** 此处后端没有提供注释 GET /api/notices */
