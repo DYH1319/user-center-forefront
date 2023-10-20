@@ -65,7 +65,7 @@ const Register: React.FC = () => {
           }}
         >
           <Tabs activeKey={type} onChange={setType}>
-            <Tabs.TabPane key="account" tab={'账户密码注册'}/>
+            <Tabs.TabPane key="account" tab={'账号密码注册'}/>
           </Tabs>
           {type === 'account' && (
             <>
@@ -94,7 +94,7 @@ const Register: React.FC = () => {
                   {
                     pattern: new RegExp('^[A-Za-z0-9_-]+$'),
                     type: 'string',
-                    message: '账户只能包含大小写字母、阿拉伯数字、下划线以及短横线！'
+                    message: '账号只能包含大小写字母、阿拉伯数字、下划线以及短横线！'
                   }
                 ]}
               />

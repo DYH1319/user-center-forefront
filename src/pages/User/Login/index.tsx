@@ -96,7 +96,7 @@ const Login: React.FC = () => {
           }}
         >
           <Tabs activeKey={type} onChange={setType}>
-            <Tabs.TabPane key="account" tab={'账户密码登录'}/>
+            <Tabs.TabPane key="account" tab={'账号密码登录'}/>
             {/*<Tabs.TabPane key="mobile" tab={'手机号登录'}/>*/}
           </Tabs>
 
@@ -130,7 +130,7 @@ const Login: React.FC = () => {
                   {
                     pattern: new RegExp('^[A-Za-z0-9_-]+$'),
                     type: 'string',
-                    message: '账户只能包含大小写字母、阿拉伯数字、下划线以及短横线！'
+                    message: '账号只能包含大小写字母、阿拉伯数字、下划线以及短横线！'
                   }
                 ]}
               />
