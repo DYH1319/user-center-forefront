@@ -2,7 +2,7 @@ import {extend} from 'umi-request';
 import {message} from "antd";
 import {history} from "@@/core/history";
 import {stringify} from "querystring";
-import * as process from "process";
+
 // import {notification} from 'antd';
 // import {history} from 'umi';
 
@@ -73,7 +73,7 @@ import * as process from "process";
 const request = extend({
   // errorHandler, // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
-  prefix: process.env.NODE_ENV === "production" ? "" : undefined
+  prefix: process.env.NODE_ENV === "production" ? "https://user-backend.dyh1319.asia" : undefined
   // requestType: 'form',
 });
 

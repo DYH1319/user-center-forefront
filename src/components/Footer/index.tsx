@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
         {
           key: 'User Center',
           title: '用户中心',
-          href: 'http://localhost:8000/',
+          href: 'https://user.dyh1319.asia',
           // 是否跳转到新页面打开
           blankTarget: true,
         },
@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
         {
           key: 'MCSManager',
           title: 'MCSManager',
-          href: 'http://43.139.17.93:23333/',
+          href: 'http://mc.dyh1319.asia',
           // 是否跳转到新页面打开
           blankTarget: true,
         },
